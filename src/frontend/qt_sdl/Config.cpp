@@ -147,6 +147,8 @@ DefaultList<bool> DefaultBools =
 #endif
 #endif
     {"DSi.DSP.HLE", true},
+    {"KHDays_EU.EnableMarluxiaMissionPlayer", false},
+    {"KHDays_EU.DisableMelonMixConnector", false},
 };
 
 DefaultList<std::string> DefaultStrings =

@@ -1,5 +1,6 @@
 #include "PluginManager.h"
 
+#include "PluginKingdomHeartsDaysMarluxia.h"
 #include "PluginKingdomHeartsDays.h"
 #include "PluginKingdomHeartsReCoded.h"
 #include "PluginHarvestMoonDsCute.h"
@@ -7,6 +8,7 @@
 #include "PluginTemplateLua.h"
 
 #define LOAD_PLUGINS \
+    LOAD_PLUGIN(PluginKingdomHeartsDaysMarluxia) \
     LOAD_PLUGIN(PluginKingdomHeartsDays) \
     LOAD_PLUGIN(PluginKingdomHeartsReCoded) \
     LOAD_PLUGIN(PluginHarvestMoonDsCute) \

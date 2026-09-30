@@ -128,8 +128,6 @@ void SaveManager::CheckFlush()
 
     SecondaryBufferLock->lock();
 
-    Log(LogLevel::Info, "SaveManager: Flush requested\n");
-
     if (SecondaryBufferLength != Length)
     {
         SecondaryBufferLength = Length;
