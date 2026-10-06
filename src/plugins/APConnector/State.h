@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "tcpServer.h"
 namespace melonDS { class NDS; }
 namespace Plugins::APC {
 using MsgCb = std::function<void(const std::string&)>;
@@ -19,6 +20,9 @@ public:
     void setOn(bool value);
     void loadRom();
     void loadSt();
+    void commandHandling(u8 opcode, u8 arg, u8 arg2);
+    
+    static void logmine(const char* fmt, ...);
     void poll();
 private:
     struct Item {
@@ -82,7 +86,7 @@ private:
         GOOFY,
         DONALD
     }currentChar = ROXAS;
-
+    daysTCP server{*this};
     const u16 soraFlashbackIds[5] = {39, 47, 53, 56, 61};
     const u16 xionDenyText[5] = {78, 111, 46, 46, 46};
     float hpScalePercent = 100;
@@ -104,10 +108,10 @@ private:
     u64 frm = 0;
     u32 magicKeys[15] = {0x05D, 0x05E, 0x05F, 0x60, 0x61, 0x62, 0x63, 0x64, 0x065, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B};
     u16 currentMission = 0;
-    void logmine(const char* fmt, ...);
     bool lock = false;
     void enemyScan();
     void itemGive(u32 item);
+    void pollReplaceChest();
     void pollMissionLocking();
     void RowRelease(u32 rows);
     void pollCalculateScaling();
@@ -124,6 +128,7 @@ private:
     void pollGameStart();
     u32 missionDone = 0;
     void setMissionLocked(u16 mid, bool hidden);
+    void returnToApClient(u8 opcode, u8 arg);
     void showMsg();
     void giveMagic(u8 magicKey, u8 amount);
     void dayJump();
@@ -173,5 +178,6 @@ private:
     bool goalAchieved = false;
     bool totalAchieved = false;
     bool finalMissionUnlocked = false;
+
 };
 }

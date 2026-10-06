@@ -61,6 +61,9 @@ Ctx::~Ctx() {
 }
 void Ctx::setOn(bool value) {
     on = value;
+    if(on) {
+        server.startTcpServer();
+    }
     if (!on) {
         closeCon();
         closeSrv();

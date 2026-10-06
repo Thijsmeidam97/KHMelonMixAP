@@ -2,14 +2,16 @@
 #include <WS2tcpip.h>
 #include "tcpServer.h"
 #include <vector>
+#include "State.h"
 
 static std::vector<uint8_t> rx;
 #define BASEBYTELENGTH 4
-bool startWSA() {
+
+bool daysTCP::startWSA() {
     return (WSAStartup(MAKEWORD(2, 2), &wsaData) == 0);
 }
 
-void startSocket()
+void daysTCP::startSocket()
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -23,7 +25,7 @@ void startSocket()
     }
 }
 
-void bindSocket() {
+void daysTCP::bindSocket() {
     if (serverSocket != INVALID_SOCKET) {
         sockaddr_in address{};
         address.sin_family = AF_INET;
@@ -38,7 +40,7 @@ void bindSocket() {
     }
 }
 
-void startListen()
+void daysTCP::startListen()
 {
     if (serverSocket != INVALID_SOCKET) {
         if (listen(serverSocket, 1) == SOCKET_ERROR) {
@@ -48,52 +50,38 @@ void startListen()
     }
 }
 
-void startTcpServer()
+void daysTCP::startTcpServer()
 {
-    if (startWSA()) {
-        startSocket();
-        bindSocket();
-        startListen();
+    if (serverSocket == INVALID_SOCKET) {
+        if (startWSA()) {
+            startSocket();
+            bindSocket();
+            startListen();
+        }
     }
 }
-
-void closeCli()
+void daysTCP::closeCli()
 {
     closesocket(acceptSocket);
     acceptSocket = INVALID_SOCKET;
     rx.clear();
 }
 
-void readTcp()
+void daysTCP::readTcp()
 {
     if (acceptSocket != INVALID_SOCKET) {
         uint8_t buffer[4096];
         int bufferLength = recv(acceptSocket, reinterpret_cast<char*>(buffer), sizeof(buffer), 0);
-
+        
+        
         if (bufferLength > 0) {
-            rx.insert(rx.end(), buffer, buffer + bufferLength);
-            bool processing = true;
-
-            while (processing && rx.size() >= BASEBYTELENGTH) {
-                uint32_t size = 0;
-
-                for (unsigned i = 0; i < BASEBYTELENGTH; ++i)
-                    size |= uint32_t(rx[i]) << (i * 8);
-
-                if (size == 0 || size > 65536) {
-                    closeCli();
-                    processing = false;
-                }
-                else if (rx.size() >= size + BASEBYTELENGTH) {
-                    std::vector<uint8_t> body(rx.begin() + BASEBYTELENGTH,
-                                              rx.begin() + BASEBYTELENGTH + size);
-                    rx.erase(rx.begin(), rx.begin() + BASEBYTELENGTH + size);
-                    // readFrame(body);
-                    processing = acceptSocket != INVALID_SOCKET;
-                }
-                else
-                    processing = false;
+            uint8_t opcode = buffer[4];
+            uint8_t arg = buffer[5];
+            uint8_t arg2 = 0;
+            if(bufferLength > 6){
+                arg2 = buffer[6];
             }
+            ctx.commandHandling(opcode,arg,arg2);
         }
         else if (bufferLength == 0)
             closeCli();
@@ -102,7 +90,22 @@ void readTcp()
     }
 }
 
-void acceptConnection()
+void daysTCP::send(const std::vector<uint8_t>& data)
+{
+    if (acceptSocket != INVALID_SOCKET) {
+        uint32_t size = data.size();
+        std::vector<uint8_t> packet;
+
+        for (unsigned i = 0; i < 4; ++i)
+            packet.push_back((size >> (i * 8)) & 0xFF);
+
+        packet.insert(packet.end(), data.begin(), data.end());
+        ::send(acceptSocket, reinterpret_cast<const char*>(packet.data()),
+               packet.size(), 0);
+    }
+}
+
+void daysTCP::acceptConnection()
 {
     if ((acceptSocket == INVALID_SOCKET) && (serverSocket != INVALID_SOCKET)) {
         acceptSocket = accept(serverSocket, nullptr, nullptr);
@@ -120,9 +123,7 @@ void acceptConnection()
         }
     }
 }
-
-void pollTCP(){
-    startTcpServer();
+void daysTCP::pollTCP(){
     acceptConnection();
     readTcp();
 }

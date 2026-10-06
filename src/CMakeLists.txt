@@ -80,6 +80,8 @@ add_library(core STATIC
     plugins/PluginKingdomHeartsDays.cpp
     plugins/APConnector/Json.cpp
     plugins/APConnector/Net.cpp
+    plugins/APConnector/tcpServer.cpp
+    plugins/APConnector/tcpServer.h
     plugins/APConnector/Mem.cpp
     plugins/APConnector/Character.cpp
     plugins/APConnector/Item.cpp

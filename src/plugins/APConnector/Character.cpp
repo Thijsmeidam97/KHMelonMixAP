@@ -2,7 +2,6 @@
 #include "../../Platform.h"
 namespace Plugins::APC {
 void Ctx::pollChar() {
-    if (chr.arm && chr.err.empty()) {
         const u32 scene = r32(SCENEID);
         if (scene == 2 || scene == 19) {
             const u32 liveSlot0Kind = r32(SESSIONTAB + 4);
@@ -24,6 +23,5 @@ void Ctx::pollChar() {
                 }
             }
         }
-    }
 }
 }

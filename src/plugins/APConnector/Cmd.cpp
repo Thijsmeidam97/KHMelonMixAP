@@ -5,12 +5,13 @@
 #include <iomanip>
 #include <set>
 #include <sstream>
+#include "tcpServer.h"
 namespace Plugins::APC {
 void Ctx::run() {
     ++frm;
     pollPre();
     pollActiveFieldGoal();
-    pollOpen();
+    // pollOpen();
     pollSig();
     pollChar();
     pollGameStart();
@@ -22,6 +23,28 @@ void Ctx::run() {
     showMsg();
     pollMissionLocking();
     pollDayLocking();
+    pollReplaceChest();
+    server.pollTCP();
+
+}
+
+void Ctx::commandHandling(u8 opcode, u8 arg, u8 arg2) {
+    logmine("opcode %02X, arg %02X",opcode, arg);
+    switch(opcode) {
+        case 0x01: itemGive(arg); break;
+        case 0x02: setMissionLocked(arg,arg2); break;
+        case 0x03: currentChar = static_cast<CharIds>(arg); break;
+        case 0x04: missionDone = arg; break;
+        case 0x05: finalMissionUnlocked = arg; break;
+
+    }
+    if(opcode == 0x48) {
+        itemGive(arg);
+    }
+}
+void Ctx::returnToApClient(u8 opcode, u8 arg) {
+    server.send({opcode, arg});
+
 }
 JVal Ctx::armDay() {
     const bool busy = day.arm && !day.appl && day.err.empty();

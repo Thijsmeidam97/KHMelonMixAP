@@ -12,21 +12,13 @@ void Ctx::pollMision() {
         u16 mish = r16(MISSIONID);
         bool mine = (mish == 37) || (mish == 91) || (mish == 88);
         if (missionResult == OVERACHIEVED || missionResult == ACHIEVED && !mine) {
-            JVal ev = JVal::object();
-            ev["mission"] = JVal::number(mish);
-            ev["result"] = JVal::number((int)missionResult);
-            if (revs.size() >= 64) revs.erase(revs.begin());
-            revs.push_back(std::move(ev));
+            returnToApClient(0x07, int(missionResult));
             missionResult = NOT_ACHIEVED;
             withdrawn = false;
         }
         //some missions don't activated the field goal
         if(mine) {
-            JVal ev = JVal::object();
-            ev["mission"] = JVal::number(mish);
-            ev["result"] = JVal::number((int)ACHIEVED);
-            if (revs.size() >= 64) revs.erase(revs.begin());
-            revs.push_back(std::move(ev));
+            returnToApClient(0x07, int(missionResult));
             missionResult = NOT_ACHIEVED;
             withdrawn = false;
     }
