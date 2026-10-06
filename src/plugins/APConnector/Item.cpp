@@ -1,7 +1,55 @@
 #include "State.h"
 #include <algorithm>
 #include <set>
+#include "itemDatabase.h"
 namespace Plugins::APC {
+
+
+
+void Ctx::itemGive(u32 itemKey) {
+    u32 gameState = r32(GAMESTATE);
+
+    if (gameState) {
+        u8 currentItemCount = r8(gameState + ITEMCOUNT + itemKey);
+        u8 newItemCount = currentItemCount + 1;
+        w8(gameState + ITEMCOUNT + itemKey, newItemCount);
+
+        
+        //Logic for the unlock flag, not needed in the end for item giving but does something with synth? worth keeping around for later
+        // u32 gainedFlag = ITEMFLAG + itemKey;
+        // u32 itemArrayOffset = (gainedFlag / 32) * 4;
+        // u32 read = r32(gameState + 0x10 + itemArrayOffset);
+        // logmine("read = %d\n, key = %d\n", read, itemKey);
+
+
+    }
+}
+
+void Ctx::RowRelease(u32 rows) {
+    //cleanest way of unlocking panels is by just giving slot releases
+    for (u8 i = 0; i < (rows* 5); i++) {
+        itemGive(0x01);
+    }
+}
+
+void Ctx::giveMagic(u8 magicKey, u8 amount) {
+    for (u8 i = 0; i < amount; i++) {
+        itemGive(magicKey);
+    }
+}
+
+void Ctx::printItem(u8 itemKey) {
+    for(const ItemName &item : itemDb) {
+        if(item.key == itemKey) {
+            std::string itemString = "Obtained item ";
+            itemString.append(item.name);
+            msgs.push_back(itemString);
+        }
+    }
+}
+
+
+//old stuff to be removed
 int Ctx::itemCnt(u32 key) const {
     const u32 st = r32(GAMESTATE);
     return ram(st, ITEMCOUNT + key + 1) ? r8(st + ITEMCOUNT + key) : -1;

@@ -1,27 +1,44 @@
 #include "State.h"
 #include "../../Platform.h"
 namespace Plugins::APC {
-
-int count = 0;
+bool withdrawn = false;
 void Ctx::pollMision() {
     //Setting the mission to skip giving fixed and weighted table rewards. specifically the first bit of nOption64
     u8 flags = r8(RESULTREC + RESULTFLAGS);
     bool set = (flags & 1) == 0;
-    if (set) {
+    if (set && (!withdrawn)) {
         flags = flags | 1;
         w8(RESULTREC + RESULTFLAGS, flags);
-        if (missionResult == OVERACHIEVED || missionResult == ACHIEVED) {
-            u16 mish = r16(MISSIONID);
+        u16 mish = r16(MISSIONID);
+        bool mine = (mish == 37) || (mish == 91) || (mish == 88);
+        if (missionResult == OVERACHIEVED || missionResult == ACHIEVED && !mine) {
             JVal ev = JVal::object();
             ev["mission"] = JVal::number(mish);
             ev["result"] = JVal::number((int)missionResult);
             if (revs.size() >= 64) revs.erase(revs.begin());
             revs.push_back(std::move(ev));
             missionResult = NOT_ACHIEVED;
+            withdrawn = false;
         }
+        //some missions don't activated the field goal
+        if(mine) {
+            JVal ev = JVal::object();
+            ev["mission"] = JVal::number(mish);
+            ev["result"] = JVal::number((int)ACHIEVED);
+            if (revs.size() >= 64) revs.erase(revs.begin());
+            revs.push_back(std::move(ev));
+            missionResult = NOT_ACHIEVED;
+            withdrawn = false;
+    }
+    }
+    if(set && withdrawn) {
+        withdrawn = false;
     }
 }
 
+void Ctx::pollCurrentMission(){
+    currentMission = r16(MISSIONID);
+}
 void Ctx::pollActiveFieldGoal(){
     bool result = false;
     u32 fieldContext = r32(FIELDCONTEXT);
@@ -37,17 +54,20 @@ void Ctx::pollActiveFieldGoal(){
             bool goalAchieved = done >= goal;
             bool totalAchieved = done == total;
             if (goalAchieved) missionResult = totalAchieved ? OVERACHIEVED : ACHIEVED;
-            if(count >= 240) {
-                melonDS::Platform::Log(melonDS::Platform::LogLevel::Debug, "goal= %d\n", goal);
-                melonDS::Platform::Log(melonDS::Platform::LogLevel::Debug, "total= %d\n", total);
-                melonDS::Platform::Log(melonDS::Platform::LogLevel::Debug, "done= %d\n", done);
-                fflush(stdout);
-                count = 0;
-            }
 
         } else missionResult = NOT_ACHIEVED;
+
+        u32 gameState = r32(GAMESTATE);
+        bool withdrew = false;
+        if (gameState) {
+            u8 flags = r8(gameState + 0x423);
+            withdrew = (flags & 1) != 0;
+            if(withdrew) {
+                withdrawn = true;
+                missionResult = NOT_ACHIEVED;
+            }
+         }
     }
-count++;
 }
 }
 

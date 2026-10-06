@@ -8,18 +8,20 @@
 namespace Plugins::APC {
 void Ctx::run() {
     ++frm;
-    pollDay();
     pollPre();
     pollActiveFieldGoal();
     pollOpen();
     pollSig();
-    pollItem();
     pollChar();
+    pollGameStart();
     pollGate();
-    pollMish();
     pollMision();
-    pollDays();
+    pollCalculateScaling();
+    enemyScan();
+    pollRewardsBits();
     showMsg();
+    pollMissionLocking();
+    pollDayLocking();
 }
 JVal Ctx::armDay() {
     const bool busy = day.arm && !day.appl && day.err.empty();
@@ -37,13 +39,33 @@ JVal Ctx::armDay() {
 JVal Ctx::armItem(const JVal& v) {
     u32 key = 0;
     bool ok = jInt(v.get("item_key"), key) && key >= 1 && key <= 0x276;
-    const bool busy = item.arm && !item.fire && item.err.empty();
-    JVal out = fail(ok ? "A KH358 item grant is already pending" : "Invalid real KH358 item key");
-    ok = ok && !busy;
-    if (ok) {
-        item = {};
-        item.arm = true;
-        item.key = key;
+    // const bool busy = item.arm && !item.fire && item.err.empty();
+    JVal out;
+    // ok = ok && !busy;
+    // if (ok) {
+    //     item = {};
+    //     item.arm = true;
+    //     item.key = key;
+    //     out = reply("KH358_ITEM_GRANT_ARMED");
+    //     out["item_key"] = JVal::number(key);
+    // }
+    if (true ) {
+        bool magic = false;
+        for (u8 i = 0; i < 15; i++) {
+            magic |= magicKeys[i] == key;
+            logmine("%d %d\n", magicKeys[i], key);
+        }
+        if ((key != 1) && !magic) {
+            itemGive(key);
+
+        } 
+        if( key == 1) {
+            RowRelease(1);
+        }
+        if(magic) {
+            giveMagic(key, 3);
+        }
+        printItem(key);
         out = reply("KH358_ITEM_GRANT_ARMED");
         out["item_key"] = JVal::number(key);
     }
@@ -56,6 +78,7 @@ JVal Ctx::armChar(const JVal& v) {
     if (ok) {
         chr = {};
         chr.arm = true;
+        currentChar = static_cast<CharIds>(kind);
         chr.kind = kind;
         out = reply("KH358_CHARACTER_ARMED");
         out["member_kind"] = JVal::number(kind);
@@ -147,65 +170,18 @@ JVal Ctx::fireSig(const JVal& v) {
     }
     return out;
 }
-JVal Ctx::armHolo(const JVal& v) {
-    const auto read = [](const JVal* val, u32 max, std::vector<u32>& out) {
-        bool ok = val && val->kind == JVal::Kind::Arr && val->arr.size() <= 512;
-        std::set<u32> seen;
-        if (ok) {
-            for (const JVal& x : val->arr) {
-                u32 n = 0;
-                if (!jInt(&x, n) || n < 1 || n > max || !seen.insert(n).second) ok = false;
-                if (ok) out.push_back(n);
-            }
-        }
-        return ok;
-    };
-    std::vector<u32> mish;
-    std::vector<u32> unlock;
-    std::vector<u32> days;
-    bool ok = read(v.get("mission_ids"), 0xFFFF, mish);
-    const JVal* u = v.get("unlock_mission_ids");
-    if (ok && u) ok = read(u, 0xFFFF, unlock);
-    if (!u) unlock.clear();
-    std::set<u32> locked(mish.begin(), mish.end());
-    for (u32 n : unlock)
-        if (locked.count(n)) ok = false;
-    if (ok) ok = read(v.get("days"), 358, days);
-    JVal out = fail("invalid mission ID array");
-    if (ok) {
-        holo.mish = std::move(mish);
-        holo.unlock = std::move(unlock);
-        holo.days = std::move(days);
-        holo.dayOn = !holo.days.empty();
-        holo.cache.clear();
-        holo.ctx = 0;
-        out = reply("KH358_HOLO_FILTER_ARMED");
-        out["mission_count"] = JVal::number(holo.mish.size());
-        out["unlock_mission_count"] = JVal::number(holo.unlock.size());
-        out["day_count"] = JVal::number(holo.days.size());
-        out["mission_hook_armed"] = JVal::boolean(!holo.mish.empty() || !holo.unlock.empty());
-        out["day_hook_armed"] = JVal::boolean(holo.dayOn);
-    }
-    return out;
+JVal Ctx::setGate(const JVal&) {
+    finalMissionUnlocked = true;
+    return reply("KH358_CLOCKTOWER_EXAMINE_GATE_SET");
 }
-JVal Ctx::setGate(const JVal& v) {
-    bool goal = false;
+JVal Ctx::setDone(const JVal& v) {
     u32 done = 0;
-    u32 need = 0;
-    u32 total = 0;
-    bool ok = jBool(v.get("unlocked"), goal) && jInt(v.get("completed_missions"), done) && jInt(v.get("required_missions"), need) && jInt(v.get("total_missions"), total) && need <= total && done <= total;
-    JVal out = fail("Invalid Clocktower Examine AP goal state");
+    bool ok = jInt(v.get("missionDone"), done) && done <= 91;
+    JVal out = fail("Invalid KH358 mission completed count");
     if (ok) {
-        gate.goal = goal;
-        gate.done = done;
-        gate.need = need;
-        gate.total = total;
-        if (goal) resetGate();
-        out = reply("KH358_CLOCKTOWER_EXAMINE_GATE_SET");
-        out["unlocked"] = JVal::boolean(goal);
-        out["completed_missions"] = JVal::number(done);
-        out["required_missions"] = JVal::number(need);
-        out["total_missions"] = JVal::number(total);
+        missionDone = done;
+        out = reply("KH358_MISSION_DONE_SET");
+        out["missionDone"] = JVal::number(missionDone);
     }
     return out;
 }
@@ -376,11 +352,12 @@ JVal Ctx::req(const JVal& v) {
     }
     else if (ok && type == "KH358_MISSION_RESULT_STATUS") {
         out = reply("KH358_MISSION_RESULT_STATUS");
+        out["gameCompleted"] = JVal::boolean(gameCompleted);
         out["events"] = JVal::array();
         out["events"].arr = std::move(revs);
         revs.clear();
     }
-    else if (ok && type == "KH358_HOLO_FILTER") out = armHolo(v);
+    else if (ok && type == "KH358_MISSION_DONE") out = setDone(v);
     else if (ok && type == "KH358_CLOCKTOWER_EXAMINE_GATE") out = setGate(v);
     else if (!ok) out = fail(type.empty() ? "request has no type" : "Unknown command: " + type);
     else out = fail("Unknown command: " + type);
@@ -393,8 +370,17 @@ void Ctx::procLine(const std::string& line) {
         JVal reqs;
         std::string err;
         JParse p(line);
-        bool ok = p.parse(reqs, err) && reqs.kind == JVal::Kind::Arr;
-        if (!ok)
+        bool ok = p.parse(reqs, err);
+        if (ok && reqs.kind == JVal::Kind::Obj) {
+            std::string type;
+            u32 mid = 0;
+            bool hidden = false;
+            bool set = jStr(reqs.get("type"), type) && type == "setMissionLocked";
+            set = set && jInt(reqs.get("missionID"), mid) && mid >= 1 && mid <= 91;
+            set = set && jBool(reqs.get("hidden"), hidden);
+            if (set) setMissionLocked((u16)mid, hidden);
+        }
+        else if (!ok || reqs.kind != JVal::Kind::Arr)
             send("[]\n");
         else {
             JVal out = JVal::array();

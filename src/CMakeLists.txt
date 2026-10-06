@@ -88,6 +88,9 @@ add_library(core STATIC
     plugins/APConnector/Reward.cpp
     plugins/APConnector/Goal.cpp
     plugins/APConnector/Chest.cpp
+    plugins/APConnector/Badges.cpp
+    plugins/APConnector/Day357Jump.cpp
+    plugins/APConnector/Enemies.cpp
     plugins/APConnector/Cmd.cpp
     plugins/APConnector/Connector.cpp
     plugins/PluginKingdomHeartsDaysMarluxia.cpp
@@ -283,4 +286,3 @@ endif()
 #    BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address
 #  )
 #endif()
-

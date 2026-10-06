@@ -203,10 +203,9 @@ void Ctx::clear() {
     pre = {};
     sig = {};
     revs.clear();
+    missionDone = 0;
     sig.base = -1;
     open = {};
-    gate = {};
-    holo = {};
     day = {};
     rx.clear();
     msgs.clear();

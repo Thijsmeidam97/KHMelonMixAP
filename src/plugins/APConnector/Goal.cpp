@@ -1,62 +1,75 @@
 #include "State.h"
+#include "../../Platform.h"
 namespace Plugins::APC {
-u32 Ctx::actor() const {
-    const u32 tab = r32(ACTORCTX + ACTORTAB);
-    const u32 ent = r32(tab + ACTORENT);
-    const u32 act = r32(ent + ACTORPTR);
-    return ram(tab, 8) && ram(ent, 0x24) && ram(act, ACTMODE + 1) ? act : 0;
-}
-void Ctx::release() {
-    if (gate.act) {
-        const u32 act = actor();
-        if (act) w32(act + ACTFLAGS, r32(act + ACTFLAGS) & ~0x2000u);
-        gate.act = false;
+u16 count = 0;
+void Ctx::p16(u32 ptr)
+{
+    char out[64];
+    u32 i;
+    u16 c;
+
+    i = 0;
+    while (i < 63) {
+        c = r16(ptr + i * 2);
+        if (c == 0) break;
+
+        if (c < 0x80) {
+            out[i] = (char)c;
+        } else {
+            out[i] = '?';
+        }
+
+        i++;
     }
+
+    out[i] = 0;
 }
-void Ctx::resetGate() {
-    release();
-    gate.arm = false;
-    gate.cancel = false;
-    gate.age = 0;
-    gate.panel = 0;
-}
+
 void Ctx::pollGate() {
-    if (gate.goal) {
-        if (gate.arm || gate.act) resetGate();
-    }
-    else if (r8(WORLD)) resetGate();
-    else {
-        const u32 panel = r32(PANELCTX);
-        if (ram(panel, PANELSTATE + 4)) {
-            if (r16(panel + PANELMODE) == 9 && r8(panel + PANELSTATE) == 4) {
-                gate.panel = panel;
-                gate.arm = true;
-                gate.age = 0;
-                gate.cancel = false;
-            }
-            if (gate.arm) {
-                ++gate.age;
-                const u32 act = actor();
-                if (act) {
-                    const u32 flags = r32(act + ACTFLAGS);
-                    if (!(flags & 0x2000u) && w32(act + ACTFLAGS, flags | 0x2000u)) gate.act = true;
-                    const u8 kind = r8(act + ACTKIND);
-                    const u8 af = r8(act + ACTMODE);
-                    const u16 pending = r16(act + ACTPEND);
-                    const u16 btn = r16(act + ACTBTN);
-                    if (kind == 9 || pending || (btn & 1) || (af & 4)) {
-                        w16(act + ACTPEND, 0);
-                        w16(act + ACTBTN, btn & ~0x0C03u);
-                        w8(act + ACTKIND, 7);
-                        w8(act + ACTMODE, af & ~4u);
-                        gate.cancel = true;
+    // Look at option 1 and press A if it matches a known Xion option.
+    if (!finalMissionUnlocked) {
+        u32 ctx = r32(HUDCTX);
+        if (ctx) {
+            u32 opt1 = r32(ctx + HUDCTXSECONDENTRY);
+            if (opt1) {
+                u16 option1[5];
+                bool xionCheck;
+                readOption(opt1, option1, 5);
+                xionCheck = compareOption(option1, xionDenyText, 5);
+                if (xionCheck) {
+                    u32 state = r32(ctx);
+                    u32 count = r32(ctx + HUDCTXCOUNT);
+                    u32 cursor = r32(ctx + HUDCTXCURSOR);
+                    if (cursor == 1 && count > 1 && state == 4) {
+                        w16(KEYINPUTMASK, 0x0001);
                     }
                 }
-                const u8 state = r8(gate.panel + PANELSTATE);
-                if (state >= 1 && state <= 4) w8(gate.panel + PANELSTATE, 0);
-                if (gate.age > 60) resetGate();
             }
         }
     }
+    // Check if scene 8 is activated, this activates the roxas kh2 cutscene after riku and the credits
+    u32 scene = r32(0x0204BDB0);
+    if (scene == 8) {
+        gameCompleted = true;
+    }
 }
+void Ctx::readOption(u32 ptr, u16* opts,u16 length)
+{
+    for (u16 i = 0; i < length; i++)
+    {
+        opts[i] = r16(ptr + i * 2);
+    }
 }
+
+
+bool Ctx::compareOption(u16* source, const u16* comp,u16 length){
+    bool result = true;
+    for(u16 i = 0; i < length; i++) {
+        result &= source[i] == comp[i];
+    }
+    return result;
+}
+
+
+
+}//end
