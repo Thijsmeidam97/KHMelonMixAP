@@ -130,6 +130,7 @@ private:
     bool send(const std::string& text);
     void start();
     void pollDayLocking();
+    void giveItemType(u16 item);
     bool wsOk() const;
     void accept();
     void pollGameStart();

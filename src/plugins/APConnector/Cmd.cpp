@@ -35,7 +35,7 @@ void Ctx::commandHandling(u8 opcode, u8 size, u8 *buffer) {
         case 0x01: {
             if (size == 2) {
                 u16 item = buffer[2] | (buffer[3] << 8);
-                itemGive(item);
+                giveItemType(item);
             }
             break;
         }
@@ -60,6 +60,23 @@ void Ctx::setMultipleMissionLocked(u8 amount, u8 *buffer) {
     }
 }
 
+
+void Ctx::giveItemType(u16 item){
+        bool magic = false;
+        for (u8 i = 0; i < 15; i++) {
+            magic |= magicKeys[i] == item;
+        }
+        if ((item != 1) && !magic) {
+            itemGive(item);
+
+        } 
+        if( item == 1) {
+            RowRelease(1);
+        }
+        if(magic) {
+            giveMagic(item, 3);
+        }
+}
 JVal Ctx::armDay() {
     const bool busy = day.arm && !day.appl && day.err.empty();
     const bool done = day.appl;
