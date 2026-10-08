@@ -6,26 +6,26 @@ void Ctx::pollMision() {
     //Setting the mission to skip giving fixed and weighted table rewards. specifically the first bit of nOption64
     u8 flags = r8(RESULTREC + RESULTFLAGS);
     bool set = (flags & 1) == 0;
-    if (set && (!withdrawn)) {
-        flags = flags | 1;
-        w8(RESULTREC + RESULTFLAGS, flags);
-        u16 mish = r16(MISSIONID);
-        bool mine = (mish == 37) || (mish == 91) || (mish == 88);
-        if (missionResult == OVERACHIEVED || missionResult == ACHIEVED && !mine) {
-            returnToApClient(0x07, int(missionResult));
-            missionResult = NOT_ACHIEVED;
-            withdrawn = false;
+    if (set) {
+    flags = flags | 1;
+    w8(RESULTREC + RESULTFLAGS, flags);
+
+    if (!withdrawn) {
+        u16 missionID = r16(MISSIONID);
+        bool mine = missionID == 37 || missionID == 91 || missionID == 88;
+        bool cleared = missionResult == ACHIEVED || missionResult == OVERACHIEVED;
+
+        if (cleared || mine) {
+            u8 buffer[2];
+            buffer[0] = static_cast<u8>(missionID);
+            buffer[1] = static_cast<u8>(missionResult);
+            returnToApClient(0x07, 0x02, buffer);
         }
-        //some missions don't activated the field goal
-        if(mine) {
-            returnToApClient(0x07, int(missionResult));
-            missionResult = NOT_ACHIEVED;
-            withdrawn = false;
     }
-    }
-    if(set && withdrawn) {
-        withdrawn = false;
-    }
+
+    missionResult = NOT_ACHIEVED;
+    withdrawn = false;
+}
 }
 
 void Ctx::pollCurrentMission(){

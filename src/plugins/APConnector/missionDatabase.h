@@ -6,14 +6,15 @@ struct HoloMissions {
     uint32_t missionID;
     bool visible;
     uint32_t day;
+    uint32_t setChar = 1;
 };
 
 inline HoloMissions missionDb[] = {
     {1,1,8},
-    {2,1,9},
-    {3,1,10},
-    {4,1,11},
-    {5,1,12},
+    {2,1,9,2},
+    {3,1,10,3},
+    {4,1,11,4},
+    {5,1,12,5},
     {6,0,13},
     {7,1,14},
     {8,1,15},

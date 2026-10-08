@@ -20,7 +20,7 @@ public:
     void setOn(bool value);
     void loadRom();
     void loadSt();
-    void commandHandling(u8 opcode, u8 arg, u8 arg2);
+    void commandHandling(u8 opcode, u8 size, u8 *buffer);
     
     static void logmine(const char* fmt, ...);
     void poll();
@@ -60,6 +60,10 @@ private:
         std::string err;
     } day{};
 
+
+    struct Chest {
+        std::vector<u8> states;
+    } chest{};
     typedef enum{
         NOT_ACHIEVED = 0,
         ACHIEVED = 1,
@@ -95,6 +99,7 @@ private:
     using Clock = std::chrono::steady_clock;
     melonDS::NDS* nds = nullptr;
     MsgCb cb;
+    bool setCharacterRandoFlag = true;
     u8 get4(u32 gs, u32 mid);
     APCSock srv = APCBadSock;
     APCSock cli = APCBadSock;
@@ -110,6 +115,7 @@ private:
     u16 currentMission = 0;
     bool lock = false;
     void enemyScan();
+    void setMultipleMissionLocked(u8 amount, u8 *buffer);
     void itemGive(u32 item);
     void pollReplaceChest();
     void pollMissionLocking();
@@ -118,6 +124,7 @@ private:
     void printItem(u8 itemKey);
     bool on = false;
     bool ws = false;
+    void pollDetectOpenChests();
     void closeCon();
     void closeSrv();
     bool send(const std::string& text);
@@ -128,7 +135,7 @@ private:
     void pollGameStart();
     u32 missionDone = 0;
     void setMissionLocked(u16 mid, bool hidden);
-    void returnToApClient(u8 opcode, u8 arg);
+    void returnToApClient(u8 opcode, u8 size, u8 * buffer);
     void showMsg();
     void giveMagic(u8 magicKey, u8 amount);
     void dayJump();

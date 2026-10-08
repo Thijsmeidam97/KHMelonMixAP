@@ -71,19 +71,26 @@ void daysTCP::readTcp()
 {
     if (acceptSocket != INVALID_SOCKET) {
         uint8_t buffer[4096];
-        int bufferLength = recv(acceptSocket, reinterpret_cast<char*>(buffer), sizeof(buffer), 0);
-        
-        
-        if (bufferLength > 0) {
-            uint8_t opcode = buffer[4];
-            uint8_t arg = buffer[5];
-            uint8_t arg2 = 0;
-            if(bufferLength > 6){
-                arg2 = buffer[6];
+        int length = recv(acceptSocket, reinterpret_cast<char*>(buffer), sizeof(buffer), 0);
+
+        if (length > 0) {
+            rx.insert(rx.end(), buffer, buffer + length);
+
+            while (rx.size() >= 2) {
+                uint8_t opcode = rx[0];
+                uint8_t size = rx[1];
+                size_t total = size + 2;
+
+                if (rx.size() >= total) {
+                    ctx.commandHandling(opcode, size, rx.data());
+                    rx.erase(rx.begin(), rx.begin() + total);
+                }
+                else {
+                    break;
+                }
             }
-            ctx.commandHandling(opcode,arg,arg2);
         }
-        else if (bufferLength == 0)
+        else if (length == 0)
             closeCli();
         else if (WSAGetLastError() != WSAEWOULDBLOCK)
             closeCli();
@@ -95,9 +102,6 @@ void daysTCP::send(const std::vector<uint8_t>& data)
     if (acceptSocket != INVALID_SOCKET) {
         uint32_t size = data.size();
         std::vector<uint8_t> packet;
-
-        for (unsigned i = 0; i < 4; ++i)
-            packet.push_back((size >> (i * 8)) & 0xFF);
 
         packet.insert(packet.end(), data.begin(), data.end());
         ::send(acceptSocket, reinterpret_cast<const char*>(packet.data()),

@@ -51,6 +51,10 @@ void Ctx::pollGate() {
     u32 scene = r32(0x0204BDB0);
     if (scene == 8) {
         gameCompleted = true;
+        u8 opcode = 0x09;
+        u8 size = 0x01;
+        u8 completed[1] = {0x01} ;
+        returnToApClient(opcode, size, completed);
     }
 }
 void Ctx::readOption(u32 ptr, u16* opts,u16 length)

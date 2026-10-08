@@ -24,28 +24,42 @@ void Ctx::run() {
     pollMissionLocking();
     pollDayLocking();
     pollReplaceChest();
+    pollDetectOpenChests();
     server.pollTCP();
 
 }
 
-void Ctx::commandHandling(u8 opcode, u8 arg, u8 arg2) {
-    logmine("opcode %02X, arg %02X",opcode, arg);
+void Ctx::commandHandling(u8 opcode, u8 size, u8 *buffer) {
+    logmine("opcode %02X",opcode);
     switch(opcode) {
-        case 0x01: itemGive(arg); break;
-        case 0x02: setMissionLocked(arg,arg2); break;
-        case 0x03: currentChar = static_cast<CharIds>(arg); break;
-        case 0x04: missionDone = arg; break;
-        case 0x05: finalMissionUnlocked = arg; break;
+        case 0x01: {
+            if (size == 2) {
+                u16 item = buffer[2] | (buffer[3] << 8);
+                itemGive(item);
+            }
+            break;
+        }
+        case 0x02: setMissionLocked(buffer[2],buffer[3]); break;
+        case 0x03: currentChar = static_cast<CharIds>(buffer[2]); break;
+        case 0x04: missionDone = buffer[2]; break;
+        case 0x05: finalMissionUnlocked = buffer[2]; break;
+        case 0x06: setMultipleMissionLocked(size,buffer);
 
     }
-    if(opcode == 0x48) {
-        itemGive(arg);
-    }
 }
-void Ctx::returnToApClient(u8 opcode, u8 arg) {
-    server.send({opcode, arg});
+void Ctx::returnToApClient(u8 opcode, u8 size, u8 * buffer) {
+    std::vector<u8> packet{opcode, size};
+    packet.insert(packet.end(), buffer, buffer + size);
+    server.send(packet);
 
 }
+
+void Ctx::setMultipleMissionLocked(u8 amount, u8 *buffer) {
+    for (u8 i = 0; i < (amount/2); i++) {
+        setMissionLocked(buffer[2+(i*2)],buffer[3+(i*2)]);
+    }
+}
+
 JVal Ctx::armDay() {
     const bool busy = day.arm && !day.appl && day.err.empty();
     const bool done = day.appl;
