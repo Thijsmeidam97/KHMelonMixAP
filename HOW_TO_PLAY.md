@@ -12,7 +12,6 @@ _Note: instructions updated as of version 0.9.2_
 5. In order to play "Re:Coded":
     1. Dump an original copy of "Re:Coded" and copy the NDS file to your computer (instructions at "How to dump DS cart into an NDS file" down below);
     2. Rename that NDS file to "recoded.nds", place it inside the "roms" folder;
-6. Place [this assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing) next to the Melon Mix executable file (optional; only if you want to upgrade the audio / cutscenes / textures / sprites);
 7. Launch the Melon Mix using "MelonMix_GameSelector.bat", or "MelonMix_KHDays.bat", or "MelonMix_KHReCoded.bat";
 8. As the game launches, open the game settings, by pressing Esc on your keyboard, or, with your gamepad, pressing Square (Playstation) / X (Xbox) / X (Steam Deck) / Y (Switch Pro);
 9. Configure the game according to your personal preferences.
@@ -28,7 +27,6 @@ _Note: instructions updated as of version 0.9.2_
 5. In order to play "Re:Coded":
     1. Dump an original copy of "Re:Coded" and copy the NDS file to your computer (instructions at "How to dump DS cart into an NDS file" down below);
     2. Rename that NDS file to "recoded.nds", place it inside the "roms" folder;
-6. Place [this assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing) next to the Melon Mix executable file (optional; only if you want to upgrade the audio / cutscenes / textures / sprites);
 7. Right-click the binary/AppImage, go to "Properties", then go to the "Permissions" tab and check the "Allow executing file as program" checkbox. Repeat those steps for MelonMix_GameSelector.sh, MelonMix_KHDays.sh and MelonMix_KHReCoded.sh as well;
 8. Launch the Melon Mix using "MelonMix_GameSelector.sh", "MelonMix_KHDays.sh" or "MelonMix_KHReCoded.sh";
 9. As the game launches, open the game settings, by pressing Esc on your keyboard, or, with your gamepad, pressing Square (Playstation) / X (Xbox) / X (Steam Deck) / Y (Switch Pro);
@@ -45,7 +43,6 @@ _Note: instructions updated as of version 0.9.2_
 5. In order to play "Re:Coded":
     1. Dump an original copy of "Re:Coded" and copy the NDS file to your computer (instructions at "How to dump DS cart into an NDS file" down below);
     2. Rename that NDS file to "recoded.nds", place it inside the "roms" folder;
-6. Place [this assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing) inside the app's Contents folder (right click the Melon Mix app and press "Show Package Contents" to find it) (optional; only if you want to upgrade the audio / cutscenes / textures / sprites);
 7. Move the Melon Mix app to the Applications folder, or run the following command in the terminal: `xattr -drs com.apple.quarantine <path>`, replacing `<path>` with the full path of the Melon Mix app;
 8. Now you just need to launch the Melon Mix app, and open the desired NDS file with it;
 9. As the game launches, open the game settings, by pressing Esc on your keyboard, or, with your gamepad, pressing Square (Playstation) / X (Xbox) / X (Steam Deck) / Y (Switch Pro);
@@ -67,7 +64,6 @@ _Note: instructions updated as of version 0.9.2_
 9. In order to play "Re:Coded":
     1. Dump an original copy of "Re:Coded" and copy the NDS file to your computer (instructions at "How to dump DS cart into an NDS file" down below);
     2. Rename that NDS file to "recoded.nds", place it inside the `roms` folder;
-10. Place [this assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing) next to the Melon Mix executable file (optional; only if you want to upgrade the audio / cutscenes / textures / sprites);
 11. Open either Days or Re:Coded from the 1.5+2.5 collection;
 12. As the game launches, open the game settings, by pressing Esc on your keyboard, or, with your gamepad, pressing Square (Playstation) / X (Xbox) / X (Steam Deck) / Y (Switch Pro);
 13. Configure the game according to your personal preferences.
@@ -88,7 +84,6 @@ _Note: instructions updated as of version 0.9.2_
 9. In order to play "Re:Coded":
     1. Dump an original copy of "Re:Coded" and copy the NDS file to your computer (instructions at "How to dump DS cart into an NDS file" down below);
     2. Rename that NDS file to "recoded.nds", place it inside the `roms` folder;
-10. Place [this assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing) next to the Melon Mix executable file (optional; only if you want to upgrade the audio / cutscenes / textures / sprites);
 11. Open either Days or Re:Coded from the 1.5+2.5 collection;
 12. As the game launches, open the game settings, by pressing Esc on your keyboard, or, with your gamepad, pressing Square (Playstation) / X (Xbox) / X (Steam Deck) / Y (Switch Pro);
 13. Configure the game according to your personal preferences.

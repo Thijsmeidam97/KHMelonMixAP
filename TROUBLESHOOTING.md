@@ -12,7 +12,6 @@ You need to dump your own DS cartridge. There are multiple ways to do so. Those 
 
 1. We are currently only replacing the prerendered DS cutscenes, and not the cutscenes rendered with the game engine. If you were not aware of that, double check if you really have an issue.
 2. Do you intend to download the HD cutscenes? If no, then you are probably experiencing a bug with the rendering of a DS cutscene.
-3. Did you download [the assets folder](https://drive.google.com/drive/folders/1vQL7QZ0cQhjJ2TRFt_7u76yG9MGj6bkr?usp=sharing)? If no, download it, and then test again.
 4. Open the folder where the Melon Mix application is. From there, are the MP4 files of the cutscenes inside the assets/days/cutscenes/cinematics folder? If no, organize the folders structure so that matches, and then test again.
 5. Look for hd802.mp4 inside assets/days/cutscenes/cinematics. If you can't see it, that's because the assets folder wasn't completely downloaded. Open the Drive link from step 1, check which cutscene files are missing, download them manually, place then inside assets/days/cutscenes/cinematics, and then try again. 
 6. Try opening hd802.mp4 with VLC. Is it playing? If yes, test again by launching the Melon Mix application directly, instead of using the bash file, the batch file, or Steam.
