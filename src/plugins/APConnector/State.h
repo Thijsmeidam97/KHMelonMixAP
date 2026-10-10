@@ -127,6 +127,7 @@ private:
     void pollDetectOpenChests();
     void closeCon();
     void closeSrv();
+    void getInventory();
     bool send(const std::string& text);
     void start();
     void pollDayLocking();

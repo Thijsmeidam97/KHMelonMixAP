@@ -48,7 +48,6 @@ void Ctx::printItem(u8 itemKey) {
     }
 }
 
-
 //old stuff to be removed
 int Ctx::itemCnt(u32 key) const {
     const u32 st = r32(GAMESTATE);

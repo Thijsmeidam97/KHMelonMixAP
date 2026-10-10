@@ -7,9 +7,10 @@ namespace Plugins::APC {
 struct ItemName {
     std::uint16_t key;
     const char *name;
+    u32 amount = 0;
 };
 
-inline constexpr ItemName itemDb[] = {
+inline ItemName itemDb[] = {
     {0x0001, "Slot Releaser"},
     {0x0002, "Potion"},
     {0x0003, "Hi-Potion"},

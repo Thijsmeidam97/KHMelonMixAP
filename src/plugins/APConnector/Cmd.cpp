@@ -6,6 +6,7 @@
 #include <set>
 #include <sstream>
 #include "tcpServer.h"
+#include "itemDatabase.h"
 namespace Plugins::APC {
 void Ctx::run() {
     ++frm;
@@ -43,7 +44,8 @@ void Ctx::commandHandling(u8 opcode, u8 size, u8 *buffer) {
         case 0x03: currentChar = static_cast<CharIds>(buffer[2]); break;
         case 0x04: missionDone = buffer[2]; break;
         case 0x05: finalMissionUnlocked = buffer[2]; break;
-        case 0x06: setMultipleMissionLocked(size,buffer);
+        case 0x06: setMultipleMissionLocked(size,buffer); break;
+        case 0x10: getInventory(); break;
 
     }
 }
@@ -52,6 +54,32 @@ void Ctx::returnToApClient(u8 opcode, u8 size, u8 * buffer) {
     packet.insert(packet.end(), buffer, buffer + size);
     server.send(packet);
 
+}
+void Ctx::getInventory() {
+    u32 state = r32(GAMESTATE);
+    if (state) {
+        u8 buffer[253];
+        u8 slot = 0;
+        u8 size = 1;
+        buffer[0] = slot;
+
+        for (const ItemName &item : itemDb) {
+            buffer[size] = item.key & 0xFF;
+            buffer[size + 1] = item.key >> 8;
+            buffer[size + 2] = r8(state + ITEMCOUNT + item.key);
+            size += 3;
+
+            if (size == 253) {
+                returnToApClient(0x11, size, buffer);
+                slot++;
+                size = 1;
+                buffer[0] = slot;
+            }
+        }
+
+        if (size > 1)
+            returnToApClient(0x11, size, buffer);
+    }
 }
 
 void Ctx::setMultipleMissionLocked(u8 amount, u8 *buffer) {

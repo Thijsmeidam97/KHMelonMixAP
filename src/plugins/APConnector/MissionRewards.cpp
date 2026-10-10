@@ -12,7 +12,7 @@ void Ctx::pollMision() {
 
     if (!withdrawn) {
         u16 missionID = r16(MISSIONID);
-        bool mine = missionID == 37 || missionID == 91 || missionID == 88;
+        bool mine = missionID == 37 || missionID == 91 || missionID == 88 || missionID == 74;
         bool cleared = missionResult == ACHIEVED || missionResult == OVERACHIEVED;
 
         if (cleared || mine) {
