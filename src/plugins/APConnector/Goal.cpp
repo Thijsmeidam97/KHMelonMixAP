@@ -1,30 +1,5 @@
 #include "State.h"
-#include "../../Platform.h"
 namespace Plugins::APC {
-u16 count = 0;
-void Ctx::p16(u32 ptr)
-{
-    char out[64];
-    u32 i;
-    u16 c;
-
-    i = 0;
-    while (i < 63) {
-        c = r16(ptr + i * 2);
-        if (c == 0) break;
-
-        if (c < 0x80) {
-            out[i] = (char)c;
-        } else {
-            out[i] = '?';
-        }
-
-        i++;
-    }
-
-    out[i] = 0;
-}
-
 void Ctx::pollGate() {
     // Look at option 1 and press A if it matches a known Xion option.
     if (!finalMissionUnlocked) {
@@ -50,7 +25,6 @@ void Ctx::pollGate() {
     // Check if scene 8 is activated, this activates the roxas kh2 cutscene after riku and the credits
     u32 scene = r32(0x0204BDB0);
     if (scene == 8) {
-        gameCompleted = true;
         u8 opcode = 0x09;
         u8 size = 0x01;
         u8 completed[1] = {0x01} ;

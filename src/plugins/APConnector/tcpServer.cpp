@@ -5,7 +5,6 @@
 #include "State.h"
 
 static std::vector<uint8_t> rx;
-#define BASEBYTELENGTH 4
 
 bool daysTCP::startWSA() {
     return (WSAStartup(MAKEWORD(2, 2), &wsaData) == 0);
@@ -100,7 +99,6 @@ void daysTCP::readTcp()
 void daysTCP::send(const std::vector<uint8_t>& data)
 {
     if (acceptSocket != INVALID_SOCKET) {
-        uint32_t size = data.size();
         std::vector<uint8_t> packet;
 
         packet.insert(packet.end(), data.begin(), data.end());

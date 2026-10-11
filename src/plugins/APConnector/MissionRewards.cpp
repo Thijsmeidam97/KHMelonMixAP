@@ -28,11 +28,7 @@ void Ctx::pollMision() {
 }
 }
 
-void Ctx::pollCurrentMission(){
-    currentMission = r16(MISSIONID);
-}
 void Ctx::pollActiveFieldGoal(){
-    bool result = false;
     u32 fieldContext = r32(FIELDCONTEXT);
 
     if (fieldContext != 0) {
@@ -62,5 +58,3 @@ void Ctx::pollActiveFieldGoal(){
     }
 }
 }
-
-

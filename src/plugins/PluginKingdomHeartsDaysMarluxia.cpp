@@ -7,11 +7,7 @@ u32 PluginKingdomHeartsDaysMarluxia::euGamecode = 1346849625;
 
 PluginKingdomHeartsDaysMarluxia::PluginKingdomHeartsDaysMarluxia(u32 gameCode)
     : PluginKingdomHeartsDays(gameCode) {
-    mm = std::make_unique<APConnector>(
-        [this](const std::string& message) {
-            if (postMessageToOsd != nullptr)
-                postMessageToOsd(message);
-        });
+    mm = std::make_unique<APConnector>();
 }
 
 void PluginKingdomHeartsDaysMarluxia::loadConfigs(

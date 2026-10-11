@@ -1,20 +1,15 @@
 #include "State.h"
 #include <cmath>
-#include <unordered_set>
 namespace Plugins::APC {
 u32 index = 0;
-bool nodes[300];
 u32 currentNode = 0;
 u32 currentListCount = 0;
-bool done = false;
 bool once = true;
 #define defenseOffset 0x2BC
 #define offenseOffset 0x290
-#define maxHpOffset 0x218
 u32 listCount = 0;
 u8 currentMap = 0;
 u8 currentWorld = 0;
-u16 defensVal[10];
 void Ctx::enemyScan() {
     u32 enemyManager = r32(0x020CBF1C);
 

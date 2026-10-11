@@ -15,14 +15,6 @@
 #define SCENEID 0x0204BDB0
 #define PENDINGID 0x0204BDB4
 #define PENDINGARG 0x0204BDB8
-#define ITEMCTX 0x0205B80C
-#define ITEMCFG 0x0205B85C
-#define PANELCTX 0x0207F614
-#define ROOTCTX 0x0207FA00
-#define ROOTCTXMISSIONID 0x8BA8
-#define SCENEROOT 0x0207FA20
-#define PICKTICK 0x0207A0C8
-#define ACTORCTX 0x020B2E78
 #define HOLOCTX 0x020B5748
 #define HUDCTX 0x0207F624
 #define HUDCTXSECONDENTRY 0x7C8
@@ -35,66 +27,17 @@
 #define RESULTFLAGS 0x20
 #define MEMBERKIND 0x03
 #define ITEMCOUNT 0x810
-#define ITEMFLAG 0x4DB
-#define ROOTREC 0x8D14
-#define RECLOAD 5
-#define RECNAME 6
-#define RECIDS 8
-#define RECSTEP 0x44
-#define RECCAP 0x18
-#define CUSTOMKEY 0x0123
-#define QTYOFF 0x5C
-#define QTYNUM 32
-#define ITEMLIST 0x4C98
-#define ITEMSTEP 0x24C
-#define ITEMNUM 636
-#define DAYNUM 357
-#define STABLE 120
 #define PAGEA 0x959C
-#define PAGEB 0x95A0
 #define LISTMGR 0x13FC
 #define LISTVIS 0x10
 #define LISTPTR 0x18
 #define NODECNT 8
-#define NODELINK 0x0A
 #define NODEID 2
 #define NODEFILTER 0x10
 #define NODENEXT 0x50
-#define NODELINKOFF 0x4C
-#define NODESIZE 0x54
-#define ROWPTR 4
-#define ROWCNT 8
-#define ROWSIZE 0x10
 #define SCENEOBJ 0x14
-#define OBJCLASS 8
-#define OBJTYPE 0x0C
-#define OBJSTATE 0x1B4
-#define OBJREWARD 0x1B6
 #define OBJSLOT 0x1BA
-#define CLASSID 0x4C
-#define CLASSSIZE 0x4E
-#define ACTORTAB 4
-#define ACTORENT 4
-#define ACTORPTR 0x20
-#define ACTFLAGS 4
-#define ACTKIND 0x4D6
-#define ACTMODE 0x4E8
-#define ACTPEND 0x1C
-#define ACTBTN 0x18
-#define PANELMODE 0x1A4
-#define PANELSTATE 0x1AC
-#define RAMMIN 0x02000000
-#define RAMSIZE 0x01000000
-#define RAMMAX 0x03000000
-#define STATEWORD 0x10
 #define MGRRES 0x14
-#define MGRSIZE 0x24
-#define ROOTSPAN 0x50
-#define ITEMID 0x40
-#define ITEMCHARS 0x20
-#define OBJLINK 4
-#define LISTBUCKET 0x18
-#define SCENELIST 4
 
 #define FIELDCONTEXT 0x0207F630
 #define FIELDISACTIVEOFFSET 0x08
@@ -106,9 +49,5 @@ namespace Plugins::APC {
 using u8 = uint8_t;
 using u16 = uint16_t;
 using u32 = uint32_t;
-using u64 = uint64_t;
 
-inline bool ram(u32 addr, u32 size = 1) {
-    return addr >= RAMMIN && size <= RAMSIZE && addr <= RAMMAX - size;
-}
 }

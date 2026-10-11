@@ -78,7 +78,6 @@ add_library(core STATIC
     plugins/PluginMenuStrings.cpp
     plugins/PluginManager.cpp
     plugins/PluginKingdomHeartsDays.cpp
-    plugins/APConnector/Json.cpp
     plugins/APConnector/Net.cpp
     plugins/APConnector/tcpServer.cpp
     plugins/APConnector/tcpServer.h
@@ -87,7 +86,6 @@ add_library(core STATIC
     plugins/APConnector/Item.cpp
     plugins/APConnector/Mission.cpp
     plugins/APConnector/MissionRewards.cpp
-    plugins/APConnector/Reward.cpp
     plugins/APConnector/Goal.cpp
     plugins/APConnector/Chest.cpp
     plugins/APConnector/Badges.cpp
