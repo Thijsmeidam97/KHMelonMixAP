@@ -3,6 +3,31 @@
 namespace Plugins::APC {
 
 
+    //skip cutscene is rough experiment, needs proper rewrite. skips when you just press start
+#define PAUSECTX 0x0204BE0C
+#define PAUSECALL 0x0204BD8C
+#define PAUSEARG 0x0204BD98
+#define PAUSEFRAME 0x02022D7D
+#define SKIPFRAME 0x02022FE5
+#define HANDOFF 0xE0
+#define SKIPDEST 0x584
+#define SKIPREQ 0x588
+void Ctx::pollSkipCutscene(){
+    u32 currentScene = r32(0x0208A788);
+    static u8 delay = 0;
+    bool paused = r8(0x0204BD84) != 0;
+    u32 sceneState = currentScene + 0x4B88;
+    u32 pause = r32(PAUSECTX);
+    bool menu = r32(PAUSECALL) == PAUSEFRAME;
+    bool skip = r32(sceneState + SKIPDEST) != 0;
+    if (paused && pause && menu && skip) {
+        w32(sceneState + SKIPREQ, 1);
+        w32(pause + HANDOFF, 1);
+        w32(PAUSEARG, 0);
+        w32(PAUSECALL, SKIPFRAME);
+    } 
+}
+
 void Ctx::pollMissionLocking(){
     u32 holoCTX = r32(HOLOCTX);
 
@@ -76,4 +101,5 @@ void Ctx::setMissionLocked(u16 missionID, bool hidden) {
     for (HoloMissions& missiondb : missionDb)
         if (missiondb.missionID == missionID) missiondb.visible = hidden;
 }
+
 }

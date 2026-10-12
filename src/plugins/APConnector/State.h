@@ -46,7 +46,9 @@ private:
     }currentChar = ROXAS;
     daysTCP server{*this};
     const u16 soraFlashbackIds[5] = {39, 47, 53, 56, 61};
-    const u16 xionDenyText[5] = {78, 111, 46, 46, 46};
+    const u16 xionDenyTextEnglish[5] = {78, 111, 46, 46, 46};
+    const u16 xionDenyTextFrench[6] = {78, 111,110, 46, 46, 46};
+    const u16 xionDenyTextGerman[8] = {78, 101,105,110, 32, 46, 46, 46};
     float hpScalePercent = 100;
     float statScalePercent = 100;
     missionGoal missionResult = NOT_ACHIEVED;
@@ -65,7 +67,10 @@ private:
     void pollCalculateScaling();
     void pollDetectOpenChests();
     void getInventory();
+    bool setCharacterRandoFlag = false;
     void pollDayLocking();
+    void pollSkipCutscene();
+    void setCharacterRando(u8 size, u8 *buffer);
     void giveItemType(u16 item);
     void pollGameStart();
     void setMissionLocked(u16 mid, bool hidden);
@@ -74,6 +79,8 @@ private:
     void dayJump();
     void readOption(u32 ptr, u16* opts, u16 length);
     bool compareOption(u16* source, const u16* comp, u16 length);
+    void assignMissionCharacter(u16 missionID, u8 character);
+    void setCharacterMission(u8 size, u8 * buffer);
     u8 r8(u32 addr) const;
     u16 r16(u32 addr) const;
     u32 r32(u32 addr) const;

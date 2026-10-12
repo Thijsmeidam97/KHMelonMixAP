@@ -14,13 +14,10 @@ void Ctx::pollMision() {
         u16 missionID = r16(MISSIONID);
         bool mine = missionID == 37 || missionID == 91 || missionID == 88 || missionID == 74;
         bool cleared = missionResult == ACHIEVED || missionResult == OVERACHIEVED;
-
-        if (cleared || mine) {
-            u8 buffer[2];
-            buffer[0] = static_cast<u8>(missionID);
-            buffer[1] = static_cast<u8>(missionResult);
-            returnToApClient(0x07, 0x02, buffer);
-        }
+        u8 buffer[2];
+        buffer[0] = static_cast<u8>(missionID);
+        buffer[1] = static_cast<u8>(missionResult);
+        returnToApClient(0x07, 0x02, buffer);
     }
 
     missionResult = NOT_ACHIEVED;

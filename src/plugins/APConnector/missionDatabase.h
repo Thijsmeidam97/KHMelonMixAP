@@ -6,7 +6,7 @@ struct HoloMissions {
     uint32_t missionID;
     bool visible;
     uint32_t day;
-    uint32_t setChar = 1;
+    uint8_t setChar = 1;
 };
 
 inline HoloMissions missionDb[] = {

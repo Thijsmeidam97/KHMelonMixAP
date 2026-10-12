@@ -7,11 +7,14 @@ void Ctx::pollGate() {
         if (ctx) {
             u32 opt1 = r32(ctx + HUDCTXSECONDENTRY);
             if (opt1) {
-                u16 option1[5];
-                bool xionCheck;
-                readOption(opt1, option1, 5);
-                xionCheck = compareOption(option1, xionDenyText, 5);
-                if (xionCheck) {
+                u16 option1[8];
+                //think i'm in illegal memory, good to keep in mind
+                readOption(opt1, option1, 8);
+                //different lanuages have different text, spanish and itallian start the same as english
+                bool xionCheckEnglish = compareOption(option1, xionDenyTextEnglish, 5);
+                bool xionCheckFrench = compareOption(option1, xionDenyTextFrench, 6);
+                bool xionCheckGerman = compareOption(option1, xionDenyTextGerman, 8);
+                if (xionCheckEnglish || xionCheckFrench || xionCheckGerman) {
                     u32 state = r32(ctx);
                     u32 count = r32(ctx + HUDCTXCOUNT);
                     u32 cursor = r32(ctx + HUDCTXCURSOR);

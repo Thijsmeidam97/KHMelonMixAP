@@ -34,9 +34,24 @@ void Ctx::commandHandling(u8 opcode, u8 size, u8 *buffer) {
         case 0x05: finalMissionUnlocked = buffer[2]; break;
         case 0x06: setMultipleMissionLocked(size,buffer); break;
         case 0x10: getInventory(); break;
+        case 0x20: setCharacterMission(size,buffer); break;
+        case 0x21: setCharacterRando(size,buffer); break;
 
     }
 }
+
+void Ctx::setCharacterRando(u8 size, u8 *buffer){
+    setCharacterRandoFlag = buffer[2];
+}
+
+void Ctx::setCharacterMission(u8 size, u8 * buffer){
+    for(u32 i = 0; i < size; i+=2){
+        assignMissionCharacter(buffer[i+2],buffer[i+3]);
+    }
+    
+    setCharacterRandoFlag = true;
+}
+
 void Ctx::returnToApClient(u8 opcode, u8 size, u8 * buffer) {
     std::vector<u8> packet{opcode, size};
     packet.insert(packet.end(), buffer, buffer + size);
